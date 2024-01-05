@@ -1,4 +1,4 @@
-# Nom Nom Nav
+# Nom Nom Navigator
 
 This application will be used to recommend restaurants to the user based on their input.
 For instance, if the user inputs that they are interested in Italian food, we will give them a list of restaurants that are Italian. 
