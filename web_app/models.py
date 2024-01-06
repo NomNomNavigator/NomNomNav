@@ -8,7 +8,8 @@ It seems there are multiple ways to have SQLAlchemy create the DB tables and imp
 import datetime
 from flask_login import UserMixin
 from . import db
-from sqlalchemy import Column, Integer, String
+# Below For sqlalchemy 3.0 approach with Base model
+# from sqlalchemy import Column, Integer, String, Float
 
 
 # For user sign-up, login, session tracking, preferences, feedback tracking
@@ -23,13 +24,13 @@ class User(UserMixin, db.Model):
     # The data below is used to capture preferences explicitly, and evals/feedback from recos
     fav_restaurant = db.Column(db.Integer)
     least_fav_restaurant = db.Column(db.Integer)
-    pref_ambiance = db.Column(db.Text)
-    pref_cuisine = db.Column(db.Text)
-    pref_price_range =  db.Column(db.Text)
+    pref_ambiance = db.Column(db.String(100))
+    pref_cuisine = db.Column(db.String(100))
+    pref_price_range =  db.Column(db.String(100))
     pos_restaurants = db.Column(db.Text)
     neg_restaurants = db.Column(db.Text)
-    home_city = db.Column(db.Text)
-    home_state = db.Column(db.Text)
+    home_city = db.Column(db.String(50))
+    home_state = db.Column(db.String(2))
 
 # For tracking a profile capturing user preferences, and feedback as they use the site
 # class UserProfile(db.Model):
@@ -45,17 +46,63 @@ class User(UserMixin, db.Model):
 #     home_city = db.Column(db.Text)
 #     home_state = db.Column(db.Text)
 
-# For the restaurants to prefer, rate and recommend
+
+# For restaurants to prefer, rate and recommend
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), nullable=False)
     avg_rating = db.Column(db.Float)
     review_count = db.Column(db.Integer)
     price_range = db.Column(db.String(4))
+    site_url = db.Column(db.String(100))
+    # Discuss with team - can we use google or yelp url? Storing in DB can make things slow it said.
+    image_url = db.Column(db.Image)
+    d_address = db.Column(db.String(300), nullable=False)
+    phone_num = db.Column(db.String(20))
+    is_closed = db.Column(db.Boolean, default=False)
+    city = db.Column(db.String(50), nullable=False)
+    state = db.Column(db.String(2), nullable=False)
 
 
+# For categories that apply to a restaurant from source data - 0 to Many it seems
+class RestaurantCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
+    category = db.Column(db.String(50))
+    alias = db.Column(db.String(50))
+    # Discuss with team - since some 'categories' are cuisine, others are a setting lke "Bar"
+    type = db.Column(db.String(30))
+
+
+# For requests to recommend a restaurant - data input by user, mapped ids and/or from profile if no entry
 class RestaurantRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # profile_id = db.Column(db.Integer, db.ForeignKey('userprofile.id'), nullable=False)
+    key_restaurant = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
+    request_date = db.Column(db.DateTime)
+    # Discuss with team - do we have take input of more than one ambiance or cuisine or price range value or restrict to one?
+    ambiance = db.Column(db.String(100))
+    cuisine = db.Column(db.String(100))
+    price_range = db.Column(db.String(4))
+    in_city = db.Column(db.String(50))
+    in_state = db.Column(db.String(2))
 
 
+# For recommendations of restaurants - data return to user after request, top 3 restaurants recommended
 class RestaurantReco(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key_restaurant = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
+    # Discuss with team - want these to be foreign keys?
+    # Like the idea of tracking which reco, if any is taken and when we get that info from user?
+    reco_one = db.Column(db.Integer, nullable=False)
+    reco_two = db.Column(db.Integer)
+    reco_three = db.Column(db.Integer)
+    reco_taken = db.Column(db.Boolean, nullable=True)
+    picked_reco = db.Column(db.Integer)
+    picked_reco_eval = db.Column(db.String(1))
+    reco_timestamp = db.Column(db.DateTime, nullable=False)
+    eval_timestamp = db.Column(db.DateTime)
+
+
 
 
