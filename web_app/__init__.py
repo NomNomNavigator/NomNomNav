@@ -35,6 +35,7 @@ def create_app():
 
     return app
 
+# I am not sure if we will need this or not
 # def create_database(app):
 #     if not path.exists('anime_web/' + DB_NAME):
 #         db.create_all(app=app)
