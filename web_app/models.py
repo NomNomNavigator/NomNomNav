@@ -2,7 +2,7 @@
 ORM using SQLAlchemy for our project.  Based on the Data Model we design, will update as we learn
 
 It seems there are multiple ways to have SQLAlchemy create the DB tables and implement the model.
-1. Like CircusCircus - direct model referencing (this seems to be an older style)
+1. [SELECTED] Using Model directly - direct model referencing (this seems to be an older style, but popular still)
 2. Using DeclarativeBase - seems to be preferred way to use SQLAlchemy these days, slight changes
 """
 import datetime
@@ -55,8 +55,7 @@ class Restaurant(db.Model):
     review_count = db.Column(db.Integer)
     price_range = db.Column(db.String(4))
     site_url = db.Column(db.String(100))
-    # Discuss with team - can we use google or yelp url? Storing in DB can make things slow it said.
-    image_url = db.Column(db.Image)
+    image_url = db.Column(db.Text)
     d_address = db.Column(db.String(300), nullable=False)
     phone_num = db.Column(db.String(20))
     is_closed = db.Column(db.Boolean, default=False)
@@ -70,8 +69,8 @@ class RestaurantCategory(db.Model):
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
     category = db.Column(db.String(50))
     alias = db.Column(db.String(50))
-    # Discuss with team - since some 'categories' are cuisine, others are a setting lke "Bar"
-    type = db.Column(db.String(30))
+    # Initial app won't use type for simplicity sake, making it nullable
+    type = db.Column(db.String(30), nullable=True)
 
 
 # For requests to recommend a restaurant - data input by user, mapped ids and/or from profile if no entry
@@ -80,7 +79,7 @@ class RestaurantRequest(db.Model):
     # profile_id = db.Column(db.Integer, db.ForeignKey('userprofile.id'), nullable=False)
     key_restaurant = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
     request_date = db.Column(db.DateTime)
-    # Discuss with team - do we have take input of more than one ambiance or cuisine or price range value or restrict to one?
+    # 1 each at most selected of ambiance, cuisine, price_range. Can leave blank, grab from profile if so.
     ambiance = db.Column(db.String(100))
     cuisine = db.Column(db.String(100))
     price_range = db.Column(db.String(4))
@@ -92,17 +91,13 @@ class RestaurantRequest(db.Model):
 class RestaurantReco(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key_restaurant = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
-    # Discuss with team - want these to be foreign keys?
-    # Like the idea of tracking which reco, if any is taken and when we get that info from user?
+    # Top 3 Restaurants returned
     reco_one = db.Column(db.Integer, nullable=False)
     reco_two = db.Column(db.Integer)
     reco_three = db.Column(db.Integer)
-    reco_taken = db.Column(db.Boolean, nullable=True)
-    picked_reco = db.Column(db.Integer)
-    picked_reco_eval = db.Column(db.String(1))
     reco_timestamp = db.Column(db.DateTime, nullable=False)
-    eval_timestamp = db.Column(db.DateTime)
-
-
-
-
+    # Captures result of prompting user for "Where did you eat?" or something like that
+    reco_taken = db.Column(db.Boolean, nullable=True)
+    picked_reco = db.Column(db.Integer, nullable=True)
+    picked_reco_eval = db.Column(db.String(1), nullable=True)
+    eval_timestamp = db.Column(db.DateTime, nullable=True)
