@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     least_fav_restaurant = db.Column(db.Integer)
     pref_ambiance = db.Column(db.String(100))
     pref_cuisine = db.Column(db.String(100))
-    pref_price_range =  db.Column(db.String(100))
+    pref_price_range = db.Column(db.String(100))
     pos_restaurants = db.Column(db.Text)
     neg_restaurants = db.Column(db.Text)
     home_city = db.Column(db.String(50))

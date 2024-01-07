@@ -19,17 +19,23 @@ def create_app():
     # importing blueprints
     from .views import views
     from .confirm import confirm
+    from .models import User
 
     # registering the blueprints, making them accessible in the application
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(confirm)
 
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'confirm.login'
     login_manager.init_app(app)
 
-    # @login_manager.user_loader
-    # def load_user(_id):
-    #     return User.query.get(int(_id))
+    @login_manager.user_loader
+    def load_user(_id):
+        return User.query.get(int(_id))
 
     return app
+
+# def create_database(app):
+#     if not path.exists('anime_web/' + DB_NAME):
+#         db.create_all(app=app)
+#         print('Created Database~')
