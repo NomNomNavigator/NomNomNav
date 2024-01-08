@@ -6,19 +6,11 @@ from config import *
 
 
 db = SQLAlchemy()
-# db_name = 'database.db'
 
 
 # initializing flask
 def create_app():
     app = Flask(__name__)
-
-    ssh_tunnel = SSHTunnelForwarder(
-        (ssh_host, port),  # replace with your SSH server details
-        ssh_username=ssh_username,
-        ssh_password=ssh_password,
-        remote_bind_address=('localhost', 3306)  # replace with your MySQL server details
-    )
 
     # Start the SSH tunnel
     ssh_tunnel.start()
@@ -54,3 +46,12 @@ def create_app():
 #     if not path.exists('anime_web/' + DB_NAME):
 #         db.create_all(app=app)
 #         print('Created Database~')
+
+
+# Configure the ssh_tunnel which is started in create_app() and closed in main.py
+ssh_tunnel = SSHTunnelForwarder(
+        (ssh_host, port),  # replace with your SSH server details
+        ssh_username=ssh_username,
+        ssh_password=ssh_password,
+        remote_bind_address=('localhost', 3306)  # replace with your MySQL server details
+    )
