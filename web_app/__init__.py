@@ -1,17 +1,31 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from sshtunnel import SSHTunnelForwarder
+from config import *
+
 
 db = SQLAlchemy()
-db_name = 'database.db'
+# db_name = 'database.db'
 
 
 # initializing flask
 def create_app():
     app = Flask(__name__)
+
+    ssh_tunnel = SSHTunnelForwarder(
+        (ssh_host, port),  # replace with your SSH server details
+        ssh_username=ssh_username,
+        ssh_password=ssh_password,
+        remote_bind_address=('localhost', 3306)  # replace with your MySQL server details
+    )
+
+    # Start the SSH tunnel
+    ssh_tunnel.start()
+
     # secure the cookies session data; the secret key for the app
-    app.config['SECRET_KEY'] = "fnocwnf4384bfgvu9wer374747230gvwsab"
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_name}"
+    app.config['SECRET_KEY'] = secret_key
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{db_username}:{db_password}@localhost:{ssh_tunnel.local_bind_port}/{db_name}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # letting the database know this is the app we are going to use
