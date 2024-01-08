@@ -50,6 +50,7 @@ class User(UserMixin, db.Model):
 # For restaurants to prefer, rate and recommend
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    yelp_id = db.Column(db.String(60), unique=True)
     name = db.Column(db.String(60), nullable=False)
     avg_rating = db.Column(db.Float)
     review_count = db.Column(db.Integer)
@@ -66,7 +67,7 @@ class Restaurant(db.Model):
 # For categories that apply to a restaurant from source data - 0 to Many it seems
 class RestaurantCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id'), nullable=False)
+    restaurant_id = db.Column(db.String(60), db.ForeignKey('yelp_id'), nullable=False)
     category = db.Column(db.String(50))
     alias = db.Column(db.String(50))
     # Initial app won't use type for simplicity sake, making it nullable
