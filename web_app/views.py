@@ -12,6 +12,6 @@ def access():
 
 # home page of the users that are logged in
 @views.route('/home')
-@login_required
+# @login_required
 def home():
     return render_template('home.html')
