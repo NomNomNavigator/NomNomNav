@@ -55,5 +55,3 @@ def create_app():
 #     if not path.exists('anime_web/' + DB_NAME):
 #         db.create_all(app=app)
 #         print('Created Database~')
-
-
