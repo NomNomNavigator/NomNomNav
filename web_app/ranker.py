@@ -3,7 +3,7 @@ This file is for the ranking algorithm
 MVP:  Hard code some basic rules
 """
 from . import models, db
-from models import Restaurant, User
+from models import Restaurant, User, RestaurantCategory
 from sqlalchemy import select
 
 
@@ -43,6 +43,7 @@ def gather_ranking_data(user_id: int, cuisine: str, ambiance: str, price_range: 
     avg_rating = get_agg_rating(pos_restaurants)
 
     # Search:  Restaurants with a matching cuisine, exact matching price range, avg_rating within .5
-    search_match_restaurants = db.session.execute(
+    # cuisine_match = db.session.execute(select(Restaurant.id).join(Restaurant.yelp_id).(Restaurant.yelp_idRestaurantCategory.yelp_id)
+    cuisine_match = select(Restaurant.id).join(RestaurantCategory, Restaurant.yelp_id == RestaurantCategory.restaurant_id).filter(RestaurantCategory.category.ilike(f"%{cuisine}%"))
     # Sort/Rank: If ambiance exists, rank match first.
     # Sort/Rank: Avg_rating high to low.
