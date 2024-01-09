@@ -4,7 +4,7 @@ MVP:  Hard code some basic rules
 """
 from . import models, db
 from models import Restaurant, User, RestaurantCategory
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 
 # Function to get all the data about a user needed to recommend restaurants
@@ -43,7 +43,19 @@ def gather_ranking_data(user_id: int, cuisine: str, ambiance: str, price_range: 
     avg_rating = get_agg_rating(pos_restaurants)
 
     # Search:  Restaurants with a matching cuisine, exact matching price range, avg_rating within .5
-    # cuisine_match = db.session.execute(select(Restaurant.id).join(Restaurant.yelp_id).(Restaurant.yelp_idRestaurantCategory.yelp_id)
-    cuisine_match = select(Restaurant.id).join(RestaurantCategory, Restaurant.yelp_id == RestaurantCategory.restaurant_id).filter(RestaurantCategory.category.ilike(f"%{cuisine}%"))
+    # cuisine_match could be
+    cuisine_search = db.session.execute(select(RestaurantCategory.restaurant_id).where(RestaurantCategory.category.ilike(f"%{cuisine}%")))
+    cuisine_match = [row[0] for row in cuisine_search]
+    price_range_search = db.session.execute(select(Restaurant.id).where(Restaurant.price_range == price_range))
+
+    price_range_match = db.session.execute(
+        select(Restaurant.id, Restaurant.price_range).where(
+            and_(
+                Restaurant.id.in_(cuisine_match),
+                Restaurant.price_range == price_range
+            )
+        )
+    )
     # Sort/Rank: If ambiance exists, rank match first.
+
     # Sort/Rank: Avg_rating high to low.
