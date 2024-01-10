@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, flash
 from flask_login import login_required
 
 views = Blueprint('views', __name__)
@@ -11,7 +11,7 @@ def access():
 
 
 # home page of the users that are logged in
-@views.route('/home')
+@views.route('/prefer', methods=['POST', 'GET'])
 # @login_required
-def home():
-    return render_template('home.html')
+def prefer():
+    return render_template('prefer.html')

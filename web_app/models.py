@@ -67,7 +67,7 @@ class Restaurant(db.Model):
 # For categories that apply to a restaurant from source data - 0 to Many it seems
 class RestaurantCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    restaurant_id = db.Column(db.String(60), db.ForeignKey('yelp_id'), nullable=False)
+    restaurant_id = db.Column(db.String(60), db.ForeignKey('restaurant.yelp_id'), nullable=False)
     category = db.Column(db.String(50))
     alias = db.Column(db.String(50))
     # Initial app won't use type for simplicity sake, making it nullable

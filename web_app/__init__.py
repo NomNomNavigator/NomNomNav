@@ -43,6 +43,7 @@ def create_app():
     login_manager.login_view = 'confirm.login'
     login_manager.init_app(app)
 
+    # telling flask how to load a user; looks for primary key to look for user
     @login_manager.user_loader
     def load_user(_id):
         return User.query.get(int(_id))
