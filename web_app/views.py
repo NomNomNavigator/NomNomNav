@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 views = Blueprint('views', __name__)
 
@@ -14,4 +14,4 @@ def access():
 @views.route('/prefer', methods=['POST', 'GET'])
 # @login_required
 def prefer():
-    return render_template('prefer.html')
+    return render_template('prefer.html', user=current_user)
